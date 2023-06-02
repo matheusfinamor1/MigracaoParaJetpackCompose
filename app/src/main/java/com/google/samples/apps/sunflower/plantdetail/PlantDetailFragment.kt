@@ -22,6 +22,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ShareCompat
 import androidx.core.widget.NestedScrollView
@@ -62,9 +63,19 @@ class PlantDetailFragment : Fragment() {
         ).apply {
             viewModel = plantDetailViewModel
             lifecycleOwner = viewLifecycleOwner
-            composeView.setContent {
-                MaterialTheme {
-                    PlantDetailDescription(plantDetailViewModel)
+            composeView.apply {
+                setViewCompositionStrategy(
+                    /**
+                     * DisposeOnViewTreeLifecycleDestroyed descarta a composição somente quando o
+                     * LifecycleOwner do fragmento for destruido.
+                     * SEMPRE usar essa Strategy quando se trabalhar em fragmentos.
+                     */
+                    ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+                )
+                setContent {
+                    MaterialTheme{
+                        PlantDetailDescription(plantDetailViewModel = plantDetailViewModel)
+                    }
                 }
             }
             callback = object : Callback {
